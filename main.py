@@ -1,5 +1,6 @@
 #Se determinó que el épsilon (cadena vacía) será un '?'
 import json
+from primeraMitad import shunting_yard
 
 def verificar_input(input:str):
     traduccion = str.maketrans('áéíóúüÁÉÍÓÚÜ','aeiouuAEIOUU')
@@ -33,3 +34,4 @@ transiciones = [(0, 'a', 1), (1, 'b', 2), (2, 'a', 0)]
 
 export_automata(estados,simbolos,inicio,aceptacion,transiciones)
 #ejemplo 111111111111111111111111111111111111111111111111111111
+shunting_yard("3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3")
