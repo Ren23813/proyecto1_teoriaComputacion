@@ -2,49 +2,49 @@ from collections import deque
 import re
 
 def tokenize(expression):
-    # RegEx para números (enteros), operadores y paréntesis
-    token_pattern = r'\d+|\^|\*|\/|\+|\-|\(|\)'
+    token_pattern = r'[A-Za-z0-9]|\*|\+|\(|\)|\.|\|'
     tokens = re.findall(token_pattern, expression.replace(" ", ""))
     return tokens
-
 
 def shunting_yard(input):
     stack = deque()         # stack.append() ; stack.pop()
     queue = deque()         # queue.append() ; queue.popLeft()
     tokens = tokenize(input)
     precedencia = {
-        '^':4,
         '*':3,
-        '/':3,
-        '+':2,
-        '-':2
+        '+':3,
+        '.':2,
+        '|':1,
     }
     asociatividad = {
-        '^': 'r', 
-        '*': 'l', 
-        '/': 'l', 
-        '+': 'l', 
-        '-': 'l'
+        '*': 'r',
+        '+': 'r',
+        '.': 'l', 
+        '|': 'l', 
     }
 
-    for i in tokens:
-        if i.isdigit():
-            queue.append(i)
-        elif i =='(':
-            stack.append(i)
-        elif i == ')':
+    for i in range(len(tokens)):
+        token = tokens[i]
+
+        if token.isalnum():
+            queue.append(token)
+        elif token =='(':
+            stack.append(token)
+        elif token == ')':
             while stack and stack[-1] != '(':
                 queue.append(stack.pop())
             stack.pop()
-        elif i in precedencia:
+        elif token in precedencia:
             while (stack and stack[-1] in precedencia and
-                   ((asociatividad[i] == 'l' and precedencia[i] <= precedencia[stack[-1]]) or
-                    (asociatividad[i] == 'r' and precedencia[i] < precedencia[stack[-1]]))):
+                   ((asociatividad[token] == 'l' and precedencia[token] <= precedencia[stack[-1]]) or
+                    (asociatividad[token] == 'r' and precedencia[token] < precedencia[stack[-1]]))):
                 queue.append(stack.pop())
-            stack.append(i)
-    while stack:
+            stack.append(token)
+        if i + 1 < len(tokens) and tokens[i].isalnum() and tokens[i+1].isalnum():
+            stack.append('.') 
+    while stack:    
         queue.append(stack.pop())
 
     print("Queue (resultado postfix):" , ' '.join(queue))
-# shunting_yard("3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3")
+# shunting_yard("(A.Z)+.(B|C*)")
 
