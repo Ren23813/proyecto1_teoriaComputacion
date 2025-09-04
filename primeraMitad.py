@@ -2,7 +2,7 @@ from collections import deque
 import re
 
 def tokenize(expression):
-    token_pattern = r'[A-Za-z0-9]|\*|\+|\(|\)|\.|\|'
+    token_pattern = r'[A-Za-z0-9]|\*|\+|\(|\)|\.|\||\?'
     tokens = re.findall(token_pattern, expression.replace(" ", ""))
     return tokens
 
@@ -26,7 +26,7 @@ def shunting_yard(input):
     for i in range(len(tokens)):
         token = tokens[i]
 
-        if token.isalnum():
+        if token.isalnum() or token=='?':
             queue.append(token)
         elif token =='(':
             stack.append(token)
@@ -46,5 +46,5 @@ def shunting_yard(input):
         queue.append(stack.pop())
 
     print("Queue (resultado postfix):" , ' '.join(queue))
-# shunting_yard("(A.Z)+.(B|C*)")
-
+shunting_yard("(A.Z)+.(?|C*)")
+# shunting_yard("(?|1).1")
