@@ -2,6 +2,18 @@
 import json
 from primeraMitad import shunting_yard
 
+#estructura a seguir de automatas
+automata = {
+    "estados":[],
+    "simbolos":[],
+    "inicio":None,
+    "aceptacion":[],
+    "transiciones":[]
+}
+# automata["estados"] = [0,2,5,9,6,7]
+# print(automata.get("estados"))
+
+
 def verificar_input(input:str):
     traduccion = str.maketrans('áéíóúüÁÉÍÓÚÜ','aeiouuAEIOUU')
     input.translate(traduccion)
@@ -11,7 +23,7 @@ def verificar_input(input:str):
     print(f"Usted ingresó {input}, y su valor de aceptación es:", verdad)
     #tal vez verificar que todos los paréntesis estén en pares? (cerrados y abiertos)
 
-verificar_input("aee1515+++*****???|||||()()()()()") #ejemplo
+# verificar_input("aee1515+++*****???|||||()()()()()") #ejemplo
 
 def export_automata(estados,simbolos,inicio,aceptacion,transiciones):
     data = {
@@ -26,12 +38,13 @@ def export_automata(estados,simbolos,inicio,aceptacion,transiciones):
         json.dump(data, json_file, indent=3)
 
 #ejemplo 000000000000000000000000000000000000000000000000000000
-estados = [0, 1, 2]
-simbolos = ['a', 'b']
-inicio = 0
-aceptacion = [1]
-transiciones = [(0, 'a', 1), (1, 'b', 2), (2, 'a', 0)]
-
-export_automata(estados,simbolos,inicio,aceptacion,transiciones)
+# estados = [0, 1, 2]
+# simbolos = ['a', 'b']
+# inicio = 0
+# aceptacion = [1]
+# transiciones = [(0, 'a', 1), (1, 'b', 2), (2, 'a', 0)]
+# export_automata(estados,simbolos,inicio,aceptacion,transiciones)
 #ejemplo 111111111111111111111111111111111111111111111111111111
-shunting_yard("3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3")
+
+# shunting_yard("3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3")
+ 
