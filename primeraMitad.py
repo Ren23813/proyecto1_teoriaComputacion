@@ -135,4 +135,4 @@ def regex_AFN_McYamadaSon(regexp): # regexp: ya en postfix
     return automata
 
 # print(shunting_yard("(0.0|1)*.1.(0|1)"))
-# print(regex_AFN_McYamadaSon(shunting_yard("(0.0|1)*.1.(0|1)")))
+print(regex_AFN_McYamadaSon(shunting_yard("(0.0|1)*.1.(0|1)")))
