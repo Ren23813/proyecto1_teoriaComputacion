@@ -21,8 +21,6 @@ def eliminarEstadosNoAlcanzables(estados, transiciones, inicio, aceptacion):
     nuevas_acept = [a for a in aceptacion if a in visitados]
     return nuevas_trans, nuevos_estados, nuevas_acept
 
-
-
 def empaquetarAFD(estadosDeterministas, tablaTransiciones, simbolosOriginal, inicio, aceptacionNuevo):
     # Diccionario final
     automataDeterminista = {
@@ -65,9 +63,6 @@ def empaquetarAFD(estadosDeterministas, tablaTransiciones, simbolosOriginal, ini
 
     return automataDeterminista
 
-
-
-
 #Acá intento construir algo más
 def construccionSubConjuntos(automata):
     estados = automata["estados"]
@@ -76,8 +71,6 @@ def construccionSubConjuntos(automata):
     inicio = automata["inicio"]
     aceptacion = automata["aceptacion"]
     transiciones = automata["transiciones"]
-
-
     #Se empieza el procedimiento de eliminar los estados no alcanzables
     reduccionCompleta = True
     transiciones2 = []
@@ -92,10 +85,6 @@ def construccionSubConjuntos(automata):
             transiciones, estados, aceptacion = eliminarEstadosNoAlcanzables(estados2,transiciones2,inicio, aceptacion2)
         else:
             reduccionCompleta = False
-
-    # print("estados", estados)
-    # print("transiciones", transiciones)
-    # print("aceptacion", aceptacion)
 
     simbolos.sort()
     existeEpsilon = False
@@ -121,13 +110,8 @@ def construccionSubConjuntos(automata):
                 if (transicion[0] == estados[e]) & (transicion[1] == simbolos[s]):
 
                     valor.append(transicion[2])
-                
-                
-                    
 
-
-            fila.append(valor)
-          
+            fila.append(valor)        
         estadosTransiciones.append(fila)
 
     #se agregan los valores a la columna de clave en la tabla de estados
@@ -160,65 +144,46 @@ def construccionSubConjuntos(automata):
 
     #se agregan los estados faltantes creados por e mismo epsilon
     # print(estados)
+    # ---------- Reemplazo: calcular clausuras ε transitivas por cada estado ----------
     if "¡" in simbolos:
         clave = simbolos.index("¡")
-        for e in range(len(estados)):
+        # construir lista de adyacencia por epsilon basada en estadosTransiciones
+        # epsilon_adj[i] = lista de destinos por epsilon desde estados[i]
+        epsilon_adj = []
+        for i in range(len(estados)):
+            # estadosTransiciones[i][clave] ya es la lista inicial (puede contener varios)
+            # queremos tratarlas como adyacencia directa
+            epsilon_adj.append(list(estadosTransiciones[i][clave]))
 
+        # ahora para cada estado calcular clausura_epsilon usando pila (BFS/DFS)
+        for i in range(len(estados)):
+            cierre = set()
+            stack = [estados[i]]
+            while stack:
+                v = stack.pop()
+                if v in cierre:
+                    continue
+                cierre.add(v)
+                # conseguir índices de los vecinos epsilon de v
+                try:
+                    idx_v = estados.index(v)
+                except ValueError:
+                    continue
+                for nbr in epsilon_adj[idx_v]:
+                    if nbr not in cierre:
+                        stack.append(nbr)
+            # asignar la clausura ordenada y sin duplicados a la columna '¡'
+            estadosTransiciones[i][clave] = sorted(list(cierre))
 
-            if len(estadosTransiciones[e][clave]) > 1:
-            
-
-                for a in estadosTransiciones[e][clave]:
-                  
-                    #print("RRRRRR", a, estados[e])
-                    if a != estados[e]:
-                        #indice = 0
-                        indice = estados.index(a)
-
-
-                        posiblesNuevas = estadosTransiciones[indice][clave]
-                        # print("&&&&&&&", estadosTransiciones)
-                        # print("iiiiiii", estadosTransiciones[indice])
-                        #print("yyyyy", posiblesNuevas)
-                        
-
-
-
-                        if len(posiblesNuevas) == 1:
-                            #print("nooo", posiblesNuevas[0], estadosTransiciones[e][clave])
-                            if posiblesNuevas[0] not in estadosTransiciones[e][clave]:
-                                estadosTransiciones[e][clave].append(posiblesNuevas[0])
-                                #print("RA")
-                        elif len(posiblesNuevas) > 1:
-                            #print("naaaa", posiblesNuevas[0], estadosTransiciones[e][clave])
-
-                            for h in posiblesNuevas:
-
-                                if h not in estadosTransiciones[e][clave]:
-                                    estadosTransiciones[e][clave].append(h)
-                        estadosTransiciones[e][clave] = sorted(list(set(estadosTransiciones[e][clave])))
-                                    
-
-                                 
+    # asegurar orden consistente
     if "¡" in simbolos:
         clave = simbolos.index("¡")
         for a in estadosTransiciones:
             a[clave].sort()
+    # ---------- fin reemplazo ----------
 
-
-        
-
-
-
-
-
-    # print("O")
-    # for a in estadosTransiciones:
-    #     print(a)
 
     estadosDeterministas = estados.copy()
-    
-
 
     agregado = False
     #agregar transiciones al conjunto vacio siempre que no exista una transicion para un estado
@@ -238,15 +203,6 @@ def construccionSubConjuntos(automata):
         if agregado:
             break
             
-    # print("estados deterministas")
-    # for j in range(len(estadosDeterministas)):
-    #     print(estadosDeterministas[j], "    ", estadosTransiciones[j])
-
-  
-    
-   
-  
-
     
     #Los vuelvo conjuntos
     copiaestadosD = estadosDeterministas.copy()
@@ -382,22 +338,11 @@ def construccionSubConjuntos(automata):
                 # ---------- Fin construcción de aceptacionNuevo ----------
 
 
-        # print(":D tablaTransiciones")
-        # for b in range(len(tablaTransiciones)):
-        #     print(estadosDeterministas[b], "   ", tablaTransiciones[b])
-        # print("Aceptacion", aceptacionNuevo)
-    # ---------- Fin: nueva implementación para existeEpsilon == True ----------
-
 
         
         automataAFD = empaquetarAFD(estadosDeterministas, tablaTransiciones, simbolosOriginal, inicio, aceptacionNuevo)
                         
 
-
-        
-
-    
-    #Determinista sin ?
         
     elif existeEpsilon == False:
         fila = 0
@@ -418,8 +363,7 @@ def construccionSubConjuntos(automata):
                 if len(agregarElementoEstados) != 0 and agregarElementoEstados not in estadosDeterministas:
                     
                     estadosDeterministas.append(agregarElementoEstados)
-                
-                    
+          
                     #print("ESTADOOOOOOS", estadosDeterministas)
                     agregarFila = []
 
@@ -461,9 +405,7 @@ def construccionSubConjuntos(automata):
             if i == 0 and estadoActual == inicioFinal:
                 estadosFinales.append(estadoActual)
                 tablaTransiciones.append(transicionActual)
-            
 
-            
 
             for s in range(len(simbolos)):
                 estadoSiguiente = transicionActual[s]
@@ -477,13 +419,7 @@ def construccionSubConjuntos(automata):
                     
                     estadosFinales.append(estadoSiguiente)
                     tablaTransiciones.append(v)
-                
-
-
-
-
-
-                        
+                               
         #volver los estados de aceptación listas
         aceptacionC = []
         for a in aceptacion:
@@ -513,66 +449,7 @@ def construccionSubConjuntos(automata):
 
                         
         automataAFD = empaquetarAFD(estadosFinales, tablaTransiciones, simbolosOriginal, inicio, aceptacionNuevo)
-    
-
 
     return automataAFD
 
-
-
-
-
-automata1 = {
-    'estados': ['q0', 'q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9', 'q10', 'q11', 'q12', 'q13', 'q14', 'q15', 'q16', 'q17', 'q18', 'q19', 'q20', 'q21', 'q22', 'q23', 'q24', 'q25', 'q26', 'q27'], 
-    'simbolos': ['0', '1'], 
-    'inicio': 'q8', 
-    'aceptacion': ['q27'], 
-    'transiciones': [['q0', '0', 'q1'], ['q2', '1', 'q3'], ['q4', '1', 'q5'], ['q3', '?', 'q4'], 
-                     ['q6', '?', 'q0'], ['q6', '?', 'q2'], ['q1', '?', 'q7'], ['q5', '?', 'q7'], 
-                     ['q8', '?', 'q6'], ['q7', '?', 'q6'], ['q7', '?', 'q9'], ['q8', '?', 'q9'], 
-                     ['q10', '0', 'q11'], ['q12', '0', 'q13'], ['q11', '?', 'q12'], ['q14', '1', 'q15'], 
-                     ['q16', '1', 'q17'], ['q15', '?', 'q16'], ['q18', '?', 'q10'], ['q18', '?', 'q14'], 
-                     ['q13', '?', 'q19'], ['q17', '?', 'q19'], ['q9', '?', 'q18'], ['q20', '0', 'q21'], 
-                     ['q22', '1', 'q23'], ['q24', '?', 'q20'], ['q24', '?', 'q22'], ['q21', '?', 'q25'], 
-                     ['q23', '?', 'q25'], ['q26', '?', 'q24'], ['q25', '?', 'q24'], ['q25', '?', 'q27'], ['q26', '?', 'q27'], ['q19', '?', 'q26']]}
-
-# print("automata 1:")
-#print(construccionSubConjuntos( automata1))
-# print("")
-# print("automata 3:")
-# construccionSubConjuntos(automata3)
-# print("")
-# print("automata 4:")
-# construccionSubConjuntos(automata4)
-# print("")
-# print("automata 5:")
-# construccionSubConjuntos(automata5)
-# print("")
-# print("automata 8:")
-# construccionSubConjuntos(automata8)
-# print("")
-# print("automata 9:")
-# construccionSubConjuntos(automata9)
-# print("")
-# print("automata 10:")
-# construccionSubConjuntos(automata10)
-# print("")
-# print("automata 11:")
-# construccionSubConjuntos(automata11)
-# print("")
-# print("automata 12:")
-# construccionSubConjuntos(automata12)
-# print("")
-# print("automata 13:")
-# print(construccionSubConjuntos(automata13))
-# print("")
-# print("automata 14:")
-# construccionSubConjuntos(automata14)
-
-# print("")
-# print("automata 15:")
-# construccionSubConjuntos(automata15)
-# print("")
-# print("automata 16:")
-# print(construccionSubConjuntos(automata16))
 
