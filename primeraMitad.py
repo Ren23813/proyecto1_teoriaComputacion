@@ -123,6 +123,8 @@ def regex_AFN_McYamadaSon(regexp): # regexp: ya en postfix
     
     final_frag = stack.pop()
     estados_list = sorted(list(estados), key=lambda x: int(x[1:]))
+    if '?' in simbolos_set:
+        simbolos_set.remove('?')
     simbolos = sorted(list(simbolos_set))
     
     automata = {
@@ -135,4 +137,4 @@ def regex_AFN_McYamadaSon(regexp): # regexp: ya en postfix
     return automata
 
 # print(shunting_yard("(0.0|1)*.1.(0|1)"))
-print(regex_AFN_McYamadaSon(shunting_yard("(0.0|1)*.1.(0|1)")))
+# print(regex_AFN_McYamadaSon(shunting_yard("(0.0|1)*.1.(0|1)")))

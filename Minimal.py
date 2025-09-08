@@ -73,22 +73,24 @@ def reconstruirMinimo(automata, diferencia):
             grupos.append(set([e]))
 
     # asignar un nombre a cada grupo
+
+     # Paso 2: dar nombres cortos n1, n2, ...
     mapa = {}
-    for g in grupos:
-        nombre = "_".join(sorted(g))
+    for i, g in enumerate(grupos, start=1):
+        nombre = f"n{i}"
         for estado in g:
             mapa[estado] = nombre
 
-    # Paso 2: crear nuevo conjunto de estados
+    # Paso 3: nuevos estados
     nuevos_estados = sorted(set(mapa.values()))
 
-    # Paso 3: calcular nuevo inicio
+    # Paso 4: nuevo inicio
     nuevo_inicio = mapa[inicio]
 
-    # Paso 4: calcular nuevos de aceptación (cadena, no lista)
+    # Paso 5: aceptación (lista de cadenas)
     nuevos_aceptacion = sorted({mapa[e] for e in aceptacion})
-    
-    # Paso 5: construir nuevas transiciones
+
+    # Paso 6: reconstruir transiciones sin duplicados
     nuevas_transiciones = []
     for origen, simbolo, destino in transiciones:
         nuevo_origen = mapa[origen]
@@ -131,7 +133,7 @@ def reduccionAFD(automata):
 
                 if posiblePar not in todosLosPares:
                     todosLosPares.append(posiblePar)
-    print("todosLosPares",todosLosPares)
+    #print("todosLosPares",todosLosPares)
 
                 
 
@@ -148,7 +150,7 @@ def reduccionAFD(automata):
                 par.sort()
                 pares.append(par)
 
-    print("Pares", pares)
+    #print("Pares", pares)
 
 
 
@@ -184,11 +186,11 @@ def reduccionAFD(automata):
 
     
 
-    print("pares", pares)
+    #print("pares", pares)
 
     diferencia = [x for x in todosLosPares if x not in pares]
 
-    print("dup", diferencia)
+    #print("dup", diferencia)
 
 
     return reconstruirMinimo(automata, diferencia)
@@ -205,6 +207,6 @@ def reduccionAFD(automata):
 
 
 
-reduccionAFD(automata)
-print("")
-print(reduccionAFD(automata2))
+# reduccionAFD(automata)
+# print("")
+# print(reduccionAFD(automata2))
